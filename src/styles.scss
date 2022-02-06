@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+// Define custom theme
+@include mat.core();
+$my-primary: mat.define-palette(mat.$blue-palette, 500);
+$my-accent: mat.define-palette(mat.$deep-orange-palette, 500);
+
+$light-theme: mat.define-light-theme((
+	color: (
+		primary: $my-primary,
+		accent: $my-accent
+	)
+));
+
+// Apply theme to all components
+@include mat.all-component-themes($light-theme);
+
+// Apply color to all mat-card elevations
+.mat-card:not([class*=mat-elevation-z]) {
+	@include mat.elevation(3, #1c8effd0, 2.30);
+}
+
+body {
+	margin: 0;
+	font-family: -apple-system, Roboto, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 14px;
+	color: #333;
+	box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
