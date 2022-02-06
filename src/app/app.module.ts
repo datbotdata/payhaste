@@ -7,20 +7,25 @@ import { BenefitsComponent } from './benefits/benefits.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material.module';
-import { DialogComponent } from './dialog/dialog.component';
+import { InfoComponent } from './dialogs/info/info.component';
+import { AddPersonComponent } from './dialogs/add-person/add-person.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		BenefitsComponent,
-		DialogComponent
+		InfoComponent,
+		AddPersonComponent
 	],
 	imports: [
 		BrowserModule,
 		AppRoutingModule,
 		FontAwesomeModule,
 		BrowserAnimationsModule,
-		MaterialModule
+		MaterialModule,
+		FormsModule,
+		ReactiveFormsModule
 
 	],
 	providers: [],

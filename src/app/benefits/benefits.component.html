@@ -1,46 +1,42 @@
 <mat-card class="benefits">
-	<mat-card-title>Cost of Benefits</mat-card-title>
+
+	<mat-card-title>
+		Cost of Benefits
+			<button mat-mini-fab color="accent" class="add" title="Add Employee" (click)="openAddEmployee()">
+				<fa-icon [icon]="faPlus"></fa-icon>
+			</button>
+	</mat-card-title>
 	<mat-card-subtitle>Select an employee to view their cost of benefits</mat-card-subtitle>
+
 	<mat-card-content>
+
 		<form>
 			<div class="form-row">
-				<!-- <mat-form-field class="example-full-width" appearance="fill">
-					<mat-label>Assignee</mat-label>
-					<input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+				<mat-form-field class="full-width search" appearance="outline">
+					<mat-icon matPrefix color="accent">search</mat-icon>
+					<mat-label>Employee</mat-label>
+					<input type="text" matInput [formControl]="employeeControl" [matAutocomplete]="auto">
 					<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-						<mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-							{{option.name}}
+						<mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
+							{{employee.firstName}} {{employee.lastName}}
 						</mat-option>
 					</mat-autocomplete>
-				</mat-form-field> -->
-			</div>
-		</form>
-	</mat-card-content>
-	<!-- <mat-card-actions align="end">
-		<button mat-raised-button color="accent">Create</button>
-	</mat-card-actions> -->
-</mat-card>
-<br>
-<mat-card>
-	<mat-card-title>Add Employee</mat-card-title>
-	<mat-card-subtitle>Create a new employee record</mat-card-subtitle>
-	<mat-card-content>
-		<form>
-			<div class="form-row">
-				<mat-form-field class="example-full-width" appearance="outline">
-					<mat-label>First name</mat-label>
-					<input matInput #firstName maxlength="25" autocomplete="off">
-					<mat-hint *ngIf="firstName.value.length>24" align="end"> Limit {{firstName.value.length}} / 25</mat-hint>
-				</mat-form-field>
-				<mat-form-field class="example-full-width" appearance="outline">
-					<mat-label>Last Name</mat-label>
-					<input matInput #lastName maxlength="25" autocomplete="off">
-					<mat-hint *ngIf="lastName.value.length>24" align="end">Limit {{lastName.value.length}} / 25</mat-hint>
 				</mat-form-field>
 			</div>
 		</form>
+
+		<mat-divider></mat-divider>
+		<br>
+
+		<div class="summary">
+			<mat-card class="sub-card">
+				<mat-card-title>Employee</mat-card-title>
+			</mat-card>
+			<mat-card class="sub-card">
+				<mat-card-title>Dependents</mat-card-title>
+			</mat-card>
+		</div>
+
 	</mat-card-content>
-	<mat-card-actions align="end">
-		<button mat-raised-button color="accent">Create</button>
-	</mat-card-actions>
+
 </mat-card>

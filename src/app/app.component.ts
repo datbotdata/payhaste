@@ -2,7 +2,8 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
-import { DialogComponent } from './dialog/dialog.component';
+import { InfoComponent } from './dialogs/info/info.component';
+
 
 @Component({
 	selector: 'app-root',
@@ -18,6 +19,6 @@ export class AppComponent {
 	faLinkedIn = faLinkedinIn;
 
 	openInfo() {
-		this.dialog.open(DialogComponent);
+		this.dialog.open(InfoComponent);
 	}
 }

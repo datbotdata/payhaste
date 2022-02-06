@@ -29,7 +29,30 @@
 }
 
 .benefits {
-	background-color: #fafafa;;
+
+	min-height: 300px;
+
+	.full-width {
+		min-width: 150px;
+		max-width: 500px;
+		width: 100%;
+	}
+
+	mat-form-field.search {
+		mat-icon {
+			padding-right: 10px;
+		}
+	}
+
+	button.add {
+		float:right;
+	}
+
+	.summary {
+		display: flex;
+		justify-content: space-evenly;
+		flex-wrap: wrap;
+	}
 }
 
 form {

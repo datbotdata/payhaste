@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 		MatDialogModule,
 		MatSelectModule,
 		MatCheckboxModule,
-		BrowserModule
+		BrowserModule,
+		MatDividerModule
 	],
 	exports: [
 		MatAutocompleteModule,
@@ -35,7 +37,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 		MatDialogModule,
 		MatSelectModule,
 		MatCheckboxModule,
-		BrowserModule
+		BrowserModule,
+		MatDividerModule
 	],
 })
 export class MaterialModule { }
