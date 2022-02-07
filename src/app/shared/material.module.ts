@@ -11,6 +11,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {MatDividerModule} from '@angular/material/divider';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatRadioModule} from '@angular/material/radio';
 
 
 @NgModule({
@@ -25,7 +28,10 @@ import {MatDividerModule} from '@angular/material/divider';
 		MatSelectModule,
 		MatCheckboxModule,
 		BrowserModule,
-		MatDividerModule
+		MatDividerModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
+		MatRadioModule
 	],
 	exports: [
 		MatAutocompleteModule,
@@ -38,7 +44,10 @@ import {MatDividerModule} from '@angular/material/divider';
 		MatSelectModule,
 		MatCheckboxModule,
 		BrowserModule,
-		MatDividerModule
+		MatDividerModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
+		MatRadioModule
 	],
 })
 export class MaterialModule { }

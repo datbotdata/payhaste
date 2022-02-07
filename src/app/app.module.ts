@@ -10,13 +10,16 @@ import { MaterialModule } from './shared/material.module';
 import { InfoComponent } from './dialogs/info/info.component';
 import { AddPersonComponent } from './dialogs/add-person/add-person.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConfirmComponent } from './dialogs/confirm/confirm.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		BenefitsComponent,
 		InfoComponent,
-		AddPersonComponent
+		AddPersonComponent,
+		ConfirmComponent
 	],
 	imports: [
 		BrowserModule,
@@ -25,7 +28,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 		BrowserAnimationsModule,
 		MaterialModule,
 		FormsModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+		HttpClientModule
 
 	],
 	providers: [],

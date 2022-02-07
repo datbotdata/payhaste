@@ -1,0 +1,51 @@
+[
+	{
+		"firstName": "Tony",
+		"lastName": "Stark",
+		"dob": "1970-05-27",
+		"status": "Active",
+		"dependents": [
+			{
+				"firstName": "Pepper",
+				"lastName": "Pots",
+				"spouse": true
+			},
+			{
+				"firstName": "Morgan",
+				"lastName": "Stark",
+				"spouse": false
+			}
+		]
+	},
+	{
+		"firstName": "Natasha",
+		"lastName": "Romanoff",
+		"dob": "1984-12-03",
+		"status": "Terminated"
+	},
+	{
+		"firstName": "Wanda",
+		"lastName": "Maximoff",
+		"dob": "1989-03-05",
+		"status": "Active"
+	},
+	{
+		"firstName": "Wade",
+		"lastName": "Wilson",
+		"dob": "1973-11-22",
+		"status": "Active",
+		"dependents": [
+			{
+				"firstName": "Eleanor",
+				"lastName": "Camacho",
+				"spouse": false
+			}
+		]
+	},
+	{
+		"firstName": "Peter",
+		"lastName": "Parker",
+		"dob": "1995-08-10",
+		"status": "Active"
+	}
+]

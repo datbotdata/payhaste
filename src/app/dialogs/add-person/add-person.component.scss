@@ -1,0 +1,26 @@
+.add-person {
+	display: flex;
+	flex-direction: column;
+	max-width: 300px;
+	height: 100%;
+
+	.label {
+		font-weight: bold;
+		padding-right: 10px;
+	}
+
+	.status {
+		display: flex;
+		flex-direction: column;
+		margin: 15px 0;
+		align-items: flex-start;
+
+		.mat-radio-button {
+			margin: 5px;
+		}
+	}
+
+	.mat-dialog-content {
+		min-height: 300px;
+	}
+}

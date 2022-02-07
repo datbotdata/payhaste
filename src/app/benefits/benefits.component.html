@@ -2,25 +2,27 @@
 
 	<mat-card-title>
 		Cost of Benefits
-			<button mat-mini-fab color="accent" class="add" title="Add Employee" (click)="openAddEmployee()">
+			<button mat-mini-fab color="accent" class="add" title="Add Employee" (click)="openAddPerson(PersonType.employee)">
 				<fa-icon [icon]="faPlus"></fa-icon>
 			</button>
 	</mat-card-title>
 	<mat-card-subtitle>Select an employee to view their cost of benefits</mat-card-subtitle>
 
 	<mat-card-content>
-
 		<form>
 			<div class="form-row">
 				<mat-form-field class="full-width search" appearance="outline">
 					<mat-icon matPrefix color="accent">search</mat-icon>
 					<mat-label>Employee</mat-label>
-					<input type="text" matInput [formControl]="employeeControl" [matAutocomplete]="auto">
-					<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+					<input type="text" matInput [formControl]="employeeControl" [matAutocomplete]="auto" autocomplete="off">
+					<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectEmployee($event)">
 						<mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
 							{{employee.firstName}} {{employee.lastName}}
 						</mat-option>
 					</mat-autocomplete>
+					<button *ngIf="employeeControl.dirty" matSuffix mat-icon-button aria-label="Clear" (click)="resetSearch()">
+						<mat-icon>close</mat-icon>
+					</button>
 				</mat-form-field>
 			</div>
 		</form>
@@ -30,13 +32,57 @@
 
 		<div class="summary">
 			<mat-card class="sub-card">
-				<mat-card-title>Employee</mat-card-title>
+				<mat-card-title>
+					Employee
+					<button mat-mini-fab *ngIf="employee" color="accent" class="add" title="Edit Employee" disabled>
+						<fa-icon [icon]="faEdit"></fa-icon>
+					</button>
+				</mat-card-title>
+				<mat-card-content *ngIf="employee">
+					<div class="label-container"><span class="label">Name:</span>{{employee.firstName}} {{employee.lastName}}</div>
+					<div class="label-container"><span class="label">Date of birth:</span>{{employee.dob | date}}</div>
+					<div class="label-container"><span class="label">Status:</span>{{employee.status}}</div>
+					<br><br>
+					<div class="label-container"><span class="label">Employee's benefit cost:</span>${{employeeCost}} per year</div>
+					<div class="label-container"><span class="label">Employee's per paycheck take home*:</span>${{employeeTakeHome}}</div>
+					<br><br>
+					*Take home is based on a 26 paycheck year
+				</mat-card-content>
 			</mat-card>
 			<mat-card class="sub-card">
-				<mat-card-title>Dependents</mat-card-title>
+				<mat-card-title>
+					Dependents
+					<button mat-mini-fab *ngIf="employee" color="accent" class="add" title="Add Dependent" (click)="openAddPerson(PersonType.dependent)">
+						<fa-icon [icon]="faPlus"></fa-icon>
+					</button>
+				</mat-card-title>
+				<mat-card-content *ngIf="employee?.dependents">
+					<div class="label-container" *ngFor="let dependent of employee?.dependents; index as i" >
+						{{dependent.firstName}} {{dependent.lastName}}
+						<button mat-icon-button color="accent" class="remove" title="RemoveDependent" (click)="removeDependent(i)">
+							<fa-icon [icon]="faX"></fa-icon>
+						</button>
+					</div>
+				</mat-card-content>
 			</mat-card>
 		</div>
+
+		<mat-divider></mat-divider>
+		<br><br>
+
+		<mat-card-title>
+			Total Costs of Benefits
+		</mat-card-title>
+		<mat-card-subtitle>Total costs of benefits for all active employees</mat-card-subtitle>
+		<mat-card-content>
+			<div class="label-container"><span class="label">Total active employees:</span></div>
+			<div class="label-container"><span class="label">Total dependents:</span></div>
+			<div class="label-container"><span class="label">Total cost:</span>${{totalCost}} per year</div>
+		</mat-card-content>
 
 	</mat-card-content>
 
 </mat-card>
+
+<!-- <input matInput #lastName maxlength="25" autocomplete="off">
+<mat-hint *ngIf="lastName.value.length>24" align="end">Limit {{lastName.value.length}} / 25</mat-hint> -->
