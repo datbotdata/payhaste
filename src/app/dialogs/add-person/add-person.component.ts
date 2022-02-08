@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PersonType } from 'src/app/models/person-type';
+import { PersonType } from '../../../../models/person-type';
 
 @Component({
 	selector: 'app-add-person',

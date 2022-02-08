@@ -6,8 +6,8 @@ import { faEdit, faPlus, faSearch, faTimesCircle } from '@fortawesome/free-solid
 import { map, Observable, startWith } from 'rxjs';
 import { AddPersonComponent } from '../dialogs/add-person/add-person.component';
 import { ConfirmComponent } from '../dialogs/confirm/confirm.component';
-import { Employee } from '../models/employee';
-import { PersonType } from '../models/person-type';
+import { Employee } from '../../../models/employee';
+import { PersonType } from '../../../models/person-type';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -40,20 +40,18 @@ export class BenefitsComponent implements OnInit {
 	PersonType = PersonType;
 
 	// Benefits cost variables
+	discountLetter = 'a';
+	discountMultiplier =  1 - 10/100;
 	employeeCost = 0;
 	employeeTakeHome = 0;
-	costPerEmployee = 1000;
-	constPerDependent = 500;
-	discountLetter = 'a';
-	discountPercent = 10;
-	paycheckAmount = 2000;
+	private costPerEmployee = 1000;
+	private constPerDependent = 500;
+	private discountPerEmployee = 1000 * this.discountMultiplier;
+	private discountPerDependent = 500 * this.discountMultiplier;
+	private paycheckAmount = 2000;
+	totalActiveEmployees = 0;
+	totalDependents = 0;
 	totalCost = 0;
-
-	// Create as enum
-	status = {
-		active: 'Active',
-		terminated: 'Terminated'
-	}
 
 	employee: Employee | undefined;
 
@@ -96,8 +94,9 @@ export class BenefitsComponent implements OnInit {
 		const dialogRef = this.dialog.open(ConfirmComponent);
 
 		dialogRef.afterClosed().subscribe(data => {
-			if (data) {
-				this.employee?.dependents?.splice(index, 1);
+			if (data && this.employee) {
+				this.employee.dependents?.splice(index, 1);
+				this._calculateEmployeeCost(this.employee);
 			}
 		});
 	}
@@ -153,19 +152,32 @@ export class BenefitsComponent implements OnInit {
 
 	// Calculate cost for the current employee
 	private _calculateEmployeeCost(employee: Employee): void {
-		let employeeDiscount = employee.firstName.toLowerCase().startsWith(this.discountLetter);
-		let dependentCount = employee.dependents ? employee.dependents.length : 0;
+		let cost = employee.firstName.toLowerCase().startsWith(this.discountLetter) ? this.discountPerEmployee : this.costPerEmployee;
 
-		let cost = this.costPerEmployee + (500 * dependentCount);
-		this.employeeCost = employeeDiscount ? cost * .10 : cost;
+		// If there are dependents, calculate the cost
+		if (employee.dependents && employee.dependents?.length > 0 ) {
+			let discountedDependents = employee.dependents.filter((dependent) => dependent.firstName.toLowerCase().startsWith(this.discountLetter)).length;
+			// We already filtered through the dependents, get the remaining
+			let remainingDependents = employee.dependents.length - discountedDependents;
+			console.log(discountedDependents);
+			console.log(remainingDependents);
+
+			cost = cost + (discountedDependents * this.discountPerDependent) + (remainingDependents * this.constPerDependent);
+		}
+
+		this.employeeCost = cost;
 		this.employeeTakeHome = Math.round((((26 * this.paycheckAmount) - this.employeeCost) / 26) * 100) / 100;
+
+		this._calculateTotalCost();
 	}
 
 	private _calculateTotalCost(): void {
-		let activeEmployees = this.employees.filter(employee => employee.status == this.status.active);
+		let activeEmployees = this.employees.filter(employee => employee.status == 'Active');
 		let discountedEmployees = activeEmployees.filter((employee) => employee.firstName.toLowerCase().startsWith(this.discountLetter)).length;
 		let totalDependents = 0;
 		let discountedDependents = 0;
+
+		let totalEmployeeCost = (discountedEmployees * this.discountPerEmployee) + ((activeEmployees.length - discountedEmployees) * this.costPerEmployee);
 
 		// Get total number of depenents and discounted dependents
 		for (let employee of activeEmployees) {
@@ -174,8 +186,10 @@ export class BenefitsComponent implements OnInit {
 				discountedDependents = discountedDependents + employee.dependents.filter((dependent) => dependent.firstName.toLowerCase().startsWith(this.discountLetter)).length;
 			}
 		}
-		console.log(totalDependents);
-		console.log(discountedEmployees);
-		// this.totalCost
+
+		let totalDependentCost = (discountedDependents * this.discountPerDependent) + ((totalDependents - discountedDependents) * this.constPerDependent);
+		this.totalActiveEmployees = activeEmployees.length;
+		this.totalDependents = totalDependents;
+		this.totalCost = totalEmployeeCost + totalDependentCost;
 	}
 }
