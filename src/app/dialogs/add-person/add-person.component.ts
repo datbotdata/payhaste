@@ -31,11 +31,11 @@ export class AddPersonComponent implements OnInit {
 			}
 
 			this.form = new FormGroup({
-				firstName: new FormControl(''),
-				lastName: new FormControl(''),
-				dob: new FormControl(Date),
-				status: new FormControl(''),
-				spouse: new FormControl(Boolean)
+				FirstName: new FormControl(''),
+				LastName: new FormControl(''),
+				DOB: new FormControl(Date),
+				Status: new FormControl(''),
+				Spouse: new FormControl(Boolean)
 			});
 		}
 

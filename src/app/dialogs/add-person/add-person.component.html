@@ -3,18 +3,18 @@
 	<div mat-dialog-content [formGroup]="form">
 		<mat-form-field appearance="outline">
 			<mat-label>First Name</mat-label>
-			<input matInput formControlName="firstName" maxlength="25" required autocomplete="off">
-			<mat-hint *ngIf="form.value.firstName.length>24" align="end">Limit {{form.value.firstName.length}} / 25</mat-hint>
+			<input matInput formControlName="FirstName" maxlength="25" required autocomplete="off">
+			<mat-hint *ngIf="form.value.FirstName.length>24" align="end">Limit {{form.value.FirstName.length}} / 25</mat-hint>
 		</mat-form-field>
 		<mat-form-field appearance="outline">
 			<mat-label>Last Name</mat-label>
-			<input matInput formControlName="lastName" maxlength="25" required autocomplete="off">
-			<mat-hint *ngIf="form.value.lastName.length>24" align="end">Limit {{form.value.lastName.length}} / 25</mat-hint>
+			<input matInput formControlName="LastName" maxlength="25" required autocomplete="off">
+			<mat-hint *ngIf="form.value.LastName.length>24" align="end">Limit {{form.value.LastName.length}} / 25</mat-hint>
 		</mat-form-field>
 		<div *ngIf="employeeFields">
 			<mat-form-field appearance="outline">
 				<mat-label>Date of Birth</mat-label>
-				<input matInput [matDatepicker]="dobPicker" formControlName="dob" required>
+				<input matInput [matDatepicker]="dobPicker" formControlName="DOB" required autocomplete="off">
 				<mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
 				<mat-datepicker #dobPicker color="primary"></mat-datepicker>
 			</mat-form-field>
@@ -22,14 +22,14 @@
 		<br>
 		<div *ngIf="employeeFields">
 			<mat-label class="label">Select a status</mat-label>
-			<mat-radio-group class="status" title="Select a status" formControlName="status" required>
+			<mat-radio-group class="status" title="Select a status" formControlName="Status" required>
 				<mat-radio-button value="Active">Active</mat-radio-button>
 				<mat-radio-button value="Terminated">Terminated</mat-radio-button>
 			</mat-radio-group>
 		</div>
 		<div *ngIf="dependentFields">
 			<mat-label class="label">Is the dependent a spouse?</mat-label>
-			<mat-radio-group class="status" title="Select a status" formControlName="spouse" required>
+			<mat-radio-group class="status" title="Select a status" formControlName="Spouse" required>
 				<mat-radio-button value="true">Yes</mat-radio-button>
 				<mat-radio-button value="false">No</mat-radio-button>
 			</mat-radio-group>

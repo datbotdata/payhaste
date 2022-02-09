@@ -8,7 +8,7 @@ import { AddPersonComponent } from '../dialogs/add-person/add-person.component';
 import { ConfirmComponent } from '../dialogs/confirm/confirm.component';
 import { Employee } from '../../../models/employee';
 import { PersonType } from '../../../models/person-type';
-import { HttpClient } from '@angular/common/http';
+import { EmployeeService } from '../service/employee.service';
 
 @Component({
 	selector: 'app-benefits',
@@ -17,17 +17,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class BenefitsComponent implements OnInit {
 
-	constructor(private httpClient: HttpClient, public dialog: MatDialog) {
-		this.httpClient.get<Employee[]>('assets/employees.json').subscribe((data: Employee[]) => {
-			this.employees = data;
-			this.filteredEmployees = this.employeeControl.valueChanges.pipe(
-				startWith(''),
-				map(value => (typeof value === 'string' ? value : null)),
-				map(name => (name ? this._filter(name) : this.employees.slice())),
-			);
-			this.sortEmployees();
-			this._calculateTotalCost();
-		});
+	constructor(private employeeService: EmployeeService, public dialog: MatDialog) {
+		this._getEmployees();
 	}
 
 	// Icons
@@ -59,9 +50,28 @@ export class BenefitsComponent implements OnInit {
 
 	filteredEmployees: Observable<Employee[]> | undefined;
 
-	ngOnInit(): void { }
+	// Get all employees
+	private _getEmployees(employeeId?: number): void {
+		this.employeeService.getEmployees().subscribe((data: Employee[]) => {
+			this.employees = data;
+			this.filteredEmployees = this.employeeControl.valueChanges.pipe(
+				startWith(''),
+				map(value => (typeof value === 'string' ? value : null)),
+				map(name => (name ? this._filter(name) : this.employees.slice())),
+			);
+			this._sortEmployees();
+			this._calculateTotalCost();
 
-	// Open a dialog to create a new person
+			// Update the selected employee
+			if (employeeId) {
+				this.resetSearch();
+				this.employee = this.employees.find(employee => employee.EmployeeId == employeeId);
+				this._calculateEmployeeCost();
+			}
+		});
+	}
+
+	// Dialogs
 	openAddPerson(personType: PersonType): void {
 		const dialogConfig = new MatDialogConfig();
 		dialogConfig.disableClose = true;
@@ -73,19 +83,14 @@ export class BenefitsComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe(data => {
 			if (personType == PersonType.employee && data) {
-				this.employees.push(data);
-				this.resetSearch();
-				this.employee = data;
-				this._calculateEmployeeCost(data);
+				this.employeeService.createEmployee(data).subscribe(employeeId => {
+					this._getEmployees(employeeId);
+				});
 			} else if (personType == PersonType.dependent && data) {
-				if (this.employee?.dependents) {
-					this.employee.dependents.push(data);
-					this._calculateEmployeeCost(this.employee);
-				} else if (this.employee) {
-					console.log(this.employee);
-					this.employee.dependents = [data];
-					this._calculateEmployeeCost(this.employee);
-				}
+				data.EmployeeId = this.employee?.EmployeeId;
+				this.employeeService.createDependent(data).subscribe(dependentId => {
+					this._getEmployees(data.EmployeeId);
+				});
 			}
 		});
 	}
@@ -95,15 +100,16 @@ export class BenefitsComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe(data => {
 			if (data && this.employee) {
-				this.employee.dependents?.splice(index, 1);
-				this._calculateEmployeeCost(this.employee);
+				this.employee.Dependents?.splice(index, 1);
+				this._calculateEmployeeCost();
 			}
 		});
 	}
 
+	// Form control functions
 	// Handles how employee is displayed in the autocomplete field
 	displayFn(employee: Employee): string {
-		return employee && employee.firstName && employee.lastName ? `${employee.firstName} ${employee.lastName}` : '';
+		return employee && employee.FirstName && employee.LastName ? `${employee.FirstName} ${employee.LastName}` : '';
 	}
 
 	// Set selected employee
@@ -111,7 +117,7 @@ export class BenefitsComponent implements OnInit {
 		this.employee = event.option.value;
 		this.employeeCost = 0;
 		this.employeeTakeHome = 0;
-		this._calculateEmployeeCost(event.option.value);
+		this._calculateEmployeeCost();
 	}
 
 	// Clear search
@@ -125,17 +131,17 @@ export class BenefitsComponent implements OnInit {
 	private _filter(name: string): Employee[] {
 		const filterValue = name.toLowerCase();
 
-		this.sortEmployees();
+		this._sortEmployees();
 
 		// To allow for first name and last name (with spaces) the space is required in the literal string
-		return this.employees.filter(employee => `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(filterValue));
+		return this.employees.filter(employee => `${employee.FirstName} ${employee.LastName}`.toLowerCase().includes(filterValue));
 	}
 
 	// Sory employees alphabetically by first name + last name
-	private sortEmployees(): void {
+	private _sortEmployees(): void {
 		this.employees.sort((a, b) => {
-			let firstNameA = `${a.firstName}${a.lastName}`.toLowerCase();
-			let firstNameB = `${b.firstName}${b.lastName}`.toLowerCase();
+			let firstNameA = `${a.FirstName}${a.LastName}`.toLowerCase();
+			let firstNameB = `${b.FirstName}${b.LastName}`.toLowerCase();
 
 			if (firstNameA < firstNameB) {
 				return -1;
@@ -150,30 +156,37 @@ export class BenefitsComponent implements OnInit {
 		});
 	}
 
+	// TODO these calculations may be fine on the frontend with a small list of employees but will see performance hits with larger datasets
+	// Calculations
 	// Calculate cost for the current employee
-	private _calculateEmployeeCost(employee: Employee): void {
-		let cost = employee.firstName.toLowerCase().startsWith(this.discountLetter) ? this.discountPerEmployee : this.costPerEmployee;
+	private _calculateEmployeeCost(): void {
+		if (this.employee) {
+			let cost = this.employee.FirstName.toLowerCase().startsWith(this.discountLetter) ? this.discountPerEmployee : this.costPerEmployee;
 
-		// If there are dependents, calculate the cost
-		if (employee.dependents && employee.dependents?.length > 0 ) {
-			let discountedDependents = employee.dependents.filter((dependent) => dependent.firstName.toLowerCase().startsWith(this.discountLetter)).length;
-			// We already filtered through the dependents, get the remaining
-			let remainingDependents = employee.dependents.length - discountedDependents;
-			console.log(discountedDependents);
-			console.log(remainingDependents);
+			// If there are dependents, calculate the cost
+			if (this.employee.Dependents && this.employee.Dependents?.length > 0 ) {
+				let discountedDependents = this.employee.Dependents.filter((dependent) => dependent.FirstName.toLowerCase().startsWith(this.discountLetter)).length;
 
-			cost = cost + (discountedDependents * this.discountPerDependent) + (remainingDependents * this.constPerDependent);
+				// We already filtered through the dependents, get the remaining
+				let remainingDependents = this.employee.Dependents.length - discountedDependents;
+
+				// Combine dependent costs to employee costs
+				cost = cost + (discountedDependents * this.discountPerDependent) + (remainingDependents * this.constPerDependent);
+			}
+
+			this.employeeCost = cost;
+
+			// Round to two decimal places, total paycheck amount for the year - total employee cost divided by 26 paychecks
+			this.employeeTakeHome = Math.round((((26 * this.paycheckAmount) - this.employeeCost) / 26) * 100) / 100;
+
+			this._calculateTotalCost();
 		}
-
-		this.employeeCost = cost;
-		this.employeeTakeHome = Math.round((((26 * this.paycheckAmount) - this.employeeCost) / 26) * 100) / 100;
-
-		this._calculateTotalCost();
 	}
 
+	// Calculate the total cost of benefits and discounts
 	private _calculateTotalCost(): void {
-		let activeEmployees = this.employees.filter(employee => employee.status == 'Active');
-		let discountedEmployees = activeEmployees.filter((employee) => employee.firstName.toLowerCase().startsWith(this.discountLetter)).length;
+		let activeEmployees = this.employees.filter(employee => employee.Status == 'Active');
+		let discountedEmployees = activeEmployees.filter((employee) => employee.FirstName.toLowerCase().startsWith(this.discountLetter)).length;
 		let totalDependents = 0;
 		let discountedDependents = 0;
 
@@ -181,9 +194,9 @@ export class BenefitsComponent implements OnInit {
 
 		// Get total number of depenents and discounted dependents
 		for (let employee of activeEmployees) {
-			if (employee.dependents) {
-				totalDependents = totalDependents + (employee.dependents ? employee.dependents.length : 0);
-				discountedDependents = discountedDependents + employee.dependents.filter((dependent) => dependent.firstName.toLowerCase().startsWith(this.discountLetter)).length;
+			if (employee.Dependents) {
+				totalDependents = totalDependents + (employee.Dependents ? employee.Dependents.length : 0);
+				discountedDependents = discountedDependents + employee.Dependents.filter((dependent) => dependent.FirstName.toLowerCase().startsWith(this.discountLetter)).length;
 			}
 		}
 
@@ -192,4 +205,6 @@ export class BenefitsComponent implements OnInit {
 		this.totalDependents = totalDependents;
 		this.totalCost = totalEmployeeCost + totalDependentCost;
 	}
+
+	ngOnInit(): void { }
 }

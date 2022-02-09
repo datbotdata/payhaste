@@ -17,7 +17,7 @@
 					<input type="text" matInput [formControl]="employeeControl" [matAutocomplete]="auto" autocomplete="off">
 					<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectEmployee($event)">
 						<mat-option *ngFor="let employee of filteredEmployees | async" [value]="employee">
-							{{employee.firstName}} {{employee.lastName}}
+							{{employee.FirstName}} {{employee.LastName}}
 						</mat-option>
 					</mat-autocomplete>
 					<button *ngIf="employeeControl.dirty" matSuffix mat-icon-button aria-label="Clear" (click)="resetSearch()">
@@ -39,9 +39,9 @@
 					</button>
 				</mat-card-title>
 				<mat-card-content *ngIf="employee">
-					<div class="label-container"><span class="label">Name:</span>{{employee.firstName}} {{employee.lastName}}</div>
-					<div class="label-container"><span class="label">Date of birth:</span>{{employee.dob | date}}</div>
-					<div class="label-container"><span class="label">Status:</span>{{employee.status}}</div>
+					<div class="label-container"><span class="label">Name:</span>{{employee.FirstName}} {{employee.LastName}}</div>
+					<div class="label-container"><span class="label">Date of birth:</span>{{employee.DOB | date}}</div>
+					<div class="label-container"><span class="label">Status:</span>{{employee.Status}}</div>
 					<br><br>
 					<div class="label-container"><span class="label">Employee's benefit cost:</span>${{employeeCost}} per year</div>
 					<div class="label-container"><span class="label">Employee's per paycheck take home*:</span>${{employeeTakeHome}}</div>
@@ -56,9 +56,9 @@
 						<fa-icon [icon]="faPlus"></fa-icon>
 					</button>
 				</mat-card-title>
-				<mat-card-content *ngIf="employee?.dependents">
-					<div class="label-container" *ngFor="let dependent of employee?.dependents; index as i" >
-						{{dependent.firstName}} {{dependent.lastName}}
+				<mat-card-content *ngIf="employee?.Dependents">
+					<div class="label-container" *ngFor="let dependent of employee?.Dependents; index as i" >
+						{{dependent.FirstName}} {{dependent.LastName}}
 						<button mat-icon-button color="accent" class="remove" title="RemoveDependent" (click)="removeDependent(i)">
 							<fa-icon [icon]="faX"></fa-icon>
 						</button>
@@ -67,6 +67,7 @@
 			</mat-card>
 		</div>
 
+		<br>
 		<mat-divider></mat-divider>
 		<br><br>
 

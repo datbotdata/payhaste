@@ -3,8 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BenefitsComponent } from './benefits/benefits.component';
 
 const routes: Routes = [
-	{ path: '', redirectTo: '/benefits', pathMatch: 'full' },
-	{ path: 'benefits', component: BenefitsComponent }
+	{ path: '', component: BenefitsComponent }
 ];
 
 @NgModule({

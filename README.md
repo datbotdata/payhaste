@@ -1,5 +1,5 @@
 # Payhaste
-
+[Payhaste](https://payhaste.datbotdata.com/)
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.2.
 CLI command: ng new payhaste --routing=true --style=scss --viewEncapsulation=None --packageManager=npm --inlineTemplate=false --inlineStyle=false
 
@@ -11,6 +11,8 @@ Run `npm install`
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
+A second terminal is needed to run the firebase functions emulator `cd functions`, `npm run serve`
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
@@ -18,6 +20,13 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Deploy
+
+This project utilizes GCP and AWS.  Specifically Google's Firbase is used to host the backend and frontend while the database lives in AWS.
+`firebase deploy`
+`firebase deploy --only hosting`
+`firebase deploy --only functions`
 
 ## Running unit tests
 
