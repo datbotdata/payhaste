@@ -23,7 +23,6 @@ $light-theme: mat.define-light-theme((
 .mat-card.sub-card {
 	@include mat.elevation(0);
 	border: solid 2px rgb(202, 202, 202);
-	min-width: 400px;
 	.mat-card-title {
 		font-size: 16px;
 		font-weight: 500;

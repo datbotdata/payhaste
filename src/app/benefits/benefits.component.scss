@@ -59,11 +59,10 @@
 		flex-wrap: wrap;
 
 		.sub-card {
+			flex: 1;
 			min-height: 200px;
 			margin: 10px;
-			display: flex;
-			flex-direction: column;
-			max-width: 300px;
+			min-width: 300px;
 		}
 	}
 
