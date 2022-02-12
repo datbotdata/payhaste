@@ -57,9 +57,9 @@
 					</button>
 				</mat-card-title>
 				<mat-card-content *ngIf="employee?.Dependents">
-					<div class="label-container" *ngFor="let dependent of employee?.Dependents; index as i" >
+					<div class="label-container" *ngFor="let dependent of employee?.Dependents" >
 						{{dependent.FirstName}} {{dependent.LastName}}
-						<button mat-icon-button color="accent" class="remove" title="RemoveDependent" (click)="removeDependent(i)">
+						<button mat-icon-button color="accent" class="remove" title="RemoveDependent" (click)="removeDependent(dependent.DependentId)">
 							<fa-icon [icon]="faX"></fa-icon>
 						</button>
 					</div>
@@ -75,10 +75,10 @@
 			Total Costs of Benefits
 		</mat-card-title>
 		<mat-card-subtitle>Total costs of benefits for all active employees</mat-card-subtitle>
-		<mat-card-content>
-			<div class="label-container"><span class="label">Total active employees:</span>{{totalActiveEmployees}}</div>
-			<div class="label-container"><span class="label">Total dependents:</span>{{totalDependents}}</div>
-			<div class="label-container"><span class="label">Total cost:</span>${{totalCost}} per year</div>
+		<mat-card-content *ngIf="benefits">
+			<div class="label-container"><span class="label">Total active employees:</span>{{benefits.ActiveEmployees}}</div>
+			<div class="label-container"><span class="label">Total dependents:</span>{{benefits.ActiveDependents}}</div>
+			<div class="label-container"><span class="label">Total cost:</span>${{benefits.TotalCost}} per year</div>
 		</mat-card-content>
 
 	</mat-card-content>

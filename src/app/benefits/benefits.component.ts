@@ -9,6 +9,7 @@ import { ConfirmComponent } from '../dialogs/confirm/confirm.component';
 import { Employee } from '../../../models/employee';
 import { PersonType } from '../../../models/person-type';
 import { EmployeeService } from '../service/employee.service';
+import { Benefits } from 'models/benefits';
 
 @Component({
 	selector: 'app-benefits',
@@ -30,6 +31,8 @@ export class BenefitsComponent implements OnInit {
 	employeeControl = new FormControl();
 	PersonType = PersonType;
 
+	// TODO these values should be stored in a table
+	// TODO values should be editable per employeer
 	// Benefits cost variables
 	discountLetter = 'a';
 	discountMultiplier =  1 - 10/100;
@@ -40,32 +43,27 @@ export class BenefitsComponent implements OnInit {
 	private discountPerEmployee = 1000 * this.discountMultiplier;
 	private discountPerDependent = 500 * this.discountMultiplier;
 	private paycheckAmount = 2000;
-	totalActiveEmployees = 0;
-	totalDependents = 0;
-	totalCost = 0;
 
+	benefits!: Benefits;
 	employee: Employee | undefined;
-
-	employees!: Employee[];
 
 	filteredEmployees: Observable<Employee[]> | undefined;
 
 	// Get all employees
 	private _getEmployees(employeeId?: number): void {
-		this.employeeService.getEmployees().subscribe((data: Employee[]) => {
-			this.employees = data;
+		this.employeeService.getAll().subscribe((data: Benefits) => {
+			this.benefits = data;
 			this.filteredEmployees = this.employeeControl.valueChanges.pipe(
 				startWith(''),
 				map(value => (typeof value === 'string' ? value : null)),
-				map(name => (name ? this._filter(name) : this.employees.slice())),
+				map(name => (name ? this._filter(name) : this.benefits.Employees.slice())),
 			);
 			this._sortEmployees();
-			this._calculateTotalCost();
 
 			// Update the selected employee
 			if (employeeId) {
 				this.resetSearch();
-				this.employee = this.employees.find(employee => employee.EmployeeId == employeeId);
+				this.employee = this.benefits.Employees.find(employee => employee.EmployeeId == employeeId);
 				this._calculateEmployeeCost();
 			}
 		});
@@ -95,13 +93,16 @@ export class BenefitsComponent implements OnInit {
 		});
 	}
 
-	removeDependent(index: number): void {
+	removeDependent(dependentId: number): void {
 		const dialogRef = this.dialog.open(ConfirmComponent);
 
 		dialogRef.afterClosed().subscribe(data => {
 			if (data && this.employee) {
-				this.employee.Dependents?.splice(index, 1);
-				this._calculateEmployeeCost();
+				console.log(dependentId);
+				let employeeId = this.employee.EmployeeId;
+				this.employeeService.removeDependent(dependentId).subscribe(data => {
+					this._getEmployees(employeeId);
+				});
 			}
 		});
 	}
@@ -134,12 +135,12 @@ export class BenefitsComponent implements OnInit {
 		this._sortEmployees();
 
 		// To allow for first name and last name (with spaces) the space is required in the literal string
-		return this.employees.filter(employee => `${employee.FirstName} ${employee.LastName}`.toLowerCase().includes(filterValue));
+		return this.benefits.Employees.filter(employee => `${employee.FirstName} ${employee.LastName}`.toLowerCase().includes(filterValue));
 	}
 
 	// Sory employees alphabetically by first name + last name
 	private _sortEmployees(): void {
-		this.employees.sort((a, b) => {
+		this.benefits.Employees.sort((a, b) => {
 			let firstNameA = `${a.FirstName}${a.LastName}`.toLowerCase();
 			let firstNameB = `${b.FirstName}${b.LastName}`.toLowerCase();
 
@@ -156,8 +157,6 @@ export class BenefitsComponent implements OnInit {
 		});
 	}
 
-	// TODO these calculations may be fine on the frontend with a small list of employees but will see performance hits with larger datasets
-	// Calculations
 	// Calculate cost for the current employee
 	private _calculateEmployeeCost(): void {
 		if (this.employee) {
@@ -179,31 +178,7 @@ export class BenefitsComponent implements OnInit {
 			// Round to two decimal places, total paycheck amount for the year - total employee cost divided by 26 paychecks
 			this.employeeTakeHome = Math.round((((26 * this.paycheckAmount) - this.employeeCost) / 26) * 100) / 100;
 
-			this._calculateTotalCost();
 		}
-	}
-
-	// Calculate the total cost of benefits and discounts
-	private _calculateTotalCost(): void {
-		let activeEmployees = this.employees.filter(employee => employee.Status == 'Active');
-		let discountedEmployees = activeEmployees.filter((employee) => employee.FirstName.toLowerCase().startsWith(this.discountLetter)).length;
-		let totalDependents = 0;
-		let discountedDependents = 0;
-
-		let totalEmployeeCost = (discountedEmployees * this.discountPerEmployee) + ((activeEmployees.length - discountedEmployees) * this.costPerEmployee);
-
-		// Get total number of depenents and discounted dependents
-		for (let employee of activeEmployees) {
-			if (employee.Dependents) {
-				totalDependents = totalDependents + (employee.Dependents ? employee.Dependents.length : 0);
-				discountedDependents = discountedDependents + employee.Dependents.filter((dependent) => dependent.FirstName.toLowerCase().startsWith(this.discountLetter)).length;
-			}
-		}
-
-		let totalDependentCost = (discountedDependents * this.discountPerDependent) + ((totalDependents - discountedDependents) * this.constPerDependent);
-		this.totalActiveEmployees = activeEmployees.length;
-		this.totalDependents = totalDependents;
-		this.totalCost = totalEmployeeCost + totalDependentCost;
 	}
 
 	ngOnInit(): void { }
