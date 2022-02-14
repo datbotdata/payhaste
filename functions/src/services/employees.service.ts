@@ -5,7 +5,7 @@ import { environment } from '../environments/environment';
 import { createPool } from 'promise-mysql';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { OkPacket } from 'mysql2';
+import { OkPacket } from 'mysql';
 
 // Define connection with environment variables
 const _connection = createPool(environment.db);
