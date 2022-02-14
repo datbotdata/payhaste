@@ -21,3 +21,5 @@ This project utilizes GCP and AWS.  Specifically Google's Firbase is used to hos
 
 ## Running unit tests
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+Imported to github from my bitbucket account.
